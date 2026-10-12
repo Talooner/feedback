@@ -1,0 +1,74 @@
+name: Setup help
+description: Stuck installing or configuring Talooner, including during a trial
+labels: ["setup", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This repository is public. Remove `TALOONER_LICENSE_KEY`, forge tokens, model keys, `JEV_TOKEN` and `TALOONER_CONFIG_B64` from everything you paste.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I removed license keys, tokens and API keys from everything below
+          required: true
+  - type: dropdown
+    id: stuck-at
+    attributes:
+      label: Where are you stuck
+      options:
+        - Pulling or running the image
+        - License key / "Talooner license inactive"
+        - Forge token or permissions
+        - CI config
+        - Model or LLM keys
+        - Onboarding (`onboard`, first rules.tln)
+        - Writing or testing rules
+        - Check run or comment never appears
+        - Metrics / dashboard
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: What you tried
+      description: Steps you followed, what you expected, what happened instead.
+    validations:
+      required: true
+  - type: dropdown
+    id: forge
+    attributes:
+      label: Forge
+      options:
+        - GitHub.com
+        - GitHub Enterprise Server
+        - GitLab.com
+        - GitLab self-managed
+    validations:
+      required: true
+  - type: input
+    id: ci
+    attributes:
+      label: CI system
+      placeholder: GitHub Actions, GitLab CI, Jenkins, CircleCI, Buildkite…
+    validations:
+      required: true
+  - type: input
+    id: image
+    attributes:
+      label: Image tag or digest
+      placeholder: ghcr.io/talooner/talooner-runner:0
+  - type: textarea
+    id: ci-config
+    attributes:
+      label: CI config
+      description: The Talooner job from your pipeline, and `talooner-step config` output if you have it.
+      render: yaml
+  - type: textarea
+    id: logs
+    attributes:
+      label: Job log
+      description: Run with `TALOONER_LOG_LEVEL=debug`.
+      render: shell

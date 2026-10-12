@@ -1,0 +1,81 @@
+name: Bug report
+description: Talooner crashed, gave a wrong verdict, or didn't post its check run or comment
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This repository is public. Remove `TALOONER_LICENSE_KEY`, forge tokens, model keys, `JEV_TOKEN` and `TALOONER_CONFIG_B64` from everything you paste.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this is not a duplicate
+          required: true
+        - label: I removed license keys, tokens and API keys from everything below
+          required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you ran, what you saw, what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: version
+    attributes:
+      label: Version
+      description: Output of `docker run --rm ghcr.io/talooner/talooner-runner:<tag> version`, plus the image tag or digest your pipeline uses.
+      render: text
+    validations:
+      required: true
+  - type: dropdown
+    id: forge
+    attributes:
+      label: Forge
+      options:
+        - GitHub.com
+        - GitHub Enterprise Server
+        - GitLab.com
+        - GitLab self-managed
+    validations:
+      required: true
+  - type: input
+    id: ci
+    attributes:
+      label: CI system
+      placeholder: GitHub Actions, GitLab CI, Jenkins, CircleCI, Buildkite…
+    validations:
+      required: true
+  - type: dropdown
+    id: model
+    attributes:
+      label: Model
+      options:
+        - None (rules-only)
+        - Anthropic
+        - OpenAI
+        - OpenAI-compatible endpoint
+        - Jev + LLM
+        - Jev only
+    validations:
+      required: true
+  - type: textarea
+    id: rules
+    attributes:
+      label: Ruleset excerpt
+      description: The smallest part of `.talooner/rules.tln` that shows the problem.
+      render: text
+  - type: textarea
+    id: ci-config
+    attributes:
+      label: CI config
+      description: The Talooner job from your pipeline, and `talooner-step config` output if you have it.
+      render: yaml
+  - type: textarea
+    id: logs
+    attributes:
+      label: Job log
+      description: Run with `TALOONER_LOG_LEVEL=debug`.
+      render: shell

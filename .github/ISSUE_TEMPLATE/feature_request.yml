@@ -1,0 +1,32 @@
+name: Feature request
+description: A forge, CI system, rule capability or option Talooner is missing
+labels: ["feature", "triage"]
+body:
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this is not a duplicate
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What you are trying to do and why Talooner doesn't let you do it today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What you'd like to see. A rule sketch or config example helps.
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Current workaround
+  - type: input
+    id: setup
+    attributes:
+      label: Forge and CI
+      placeholder: GitLab self-managed + GitLab CI
