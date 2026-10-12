@@ -1,0 +1,40 @@
+rule "Block do-not-merge PRs" {
+  for records where type == "pr"
+    and attr "pr.labels" contains "do-not-merge"
+  block "merge"
+  do block "pr.merge"
+  do comment "pr" "Labelled do-not-merge. Remove the label when the PR is ready"
+  reason "labelled do-not-merge"
+  priority HIGH
+}
+
+rule "Block PRs with failing tests" {
+  for records where type == "pr"
+    and attr "pr.tests_passing" == false
+  block "merge"
+  do block "pr.merge"
+  do comment "pr" "Tests are failing on this head commit"
+  reason "failing tests"
+  priority HIGH
+}
+
+rule "Fork PRs need a maintainer" {
+  for records where type == "pr"
+    and attr "pr.is_fork" == true
+  requires "review.human"
+  do block "pr.merge"
+  do require "review.human"
+  do comment "pr" "PR from a fork by @{attr.pr.author}: a maintainer must review it"
+  reason "opened from a fork"
+  priority HIGH
+}
+
+rule "Diff too large to review automatically" {
+  for records where type == "pr"
+    and attr "pr.diff_truncated" == true
+  requires "review.human"
+  do require "review.human"
+  do comment "pr" "The diff is over the review size limit, so only part of it was checked. A human must review the rest"
+  reason "diff truncated"
+  priority MEDIUM
+}

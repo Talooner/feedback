@@ -1,0 +1,22 @@
+name: talooner
+on:
+  pull_request:
+  pull_request_review:
+  issue_comment:
+    types: [created]
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: docker://ghcr.io/talooner/talooner-runner:0
+        env:
+          TALOONER_PROVIDER: github
+          TALOONER_LICENSE_KEY: ${{ secrets.TALOONER_LICENSE_KEY }}
+          TALOONER_MODEL_BASE_URL: ${{ vars.TALOONER_MODEL_BASE_URL }}
+          TALOONER_MODEL: ${{ vars.TALOONER_MODEL }}
+          TALOONER_MODEL_API_KEY: ${{ secrets.TALOONER_MODEL_API_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}

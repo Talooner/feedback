@@ -1,0 +1,3 @@
+- path: app/services/payments/
+  kind: service
+  doc_ref: docs/services/payments.md

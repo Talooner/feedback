@@ -1,0 +1,13 @@
+talooner:
+  image:
+    name: ghcr.io/talooner/talooner-runner:0
+    entrypoint: [""]
+  stage: test
+  needs: []
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  variables:
+    TALOONER_PROVIDER: gitlab
+    GIT_STRATEGY: none
+  script:
+    - talooner-step

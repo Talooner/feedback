@@ -1,0 +1,3 @@
+checks:
+  tests: ["test", "ci/*", "*unit*"]
+  lint: ["lint", "golangci-lint", "rubocop", "eslint"]

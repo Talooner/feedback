@@ -1,1 +1,8 @@
 blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/Talooner/feedback/blob/main/SECURITY.md
+    about: Report it privately by email, never in a public issue.
+  - name: Billing, licenses and trials
+    url: https://github.com/Talooner/feedback#billing-licenses-and-trials
+    about: Report it privately by email.

@@ -1,0 +1,31 @@
+enrich "Review documented units with house guidelines" {
+  for records where type == "code_unit" and attr "unit.important" == true
+    and attr "unit.doc_content" != ""
+  stale_after 1 hour
+  tool "llm" "review" {
+    unit attr "unit.name"
+    doc  attr "unit.doc_content"
+    diff attr "unit.diff"
+    guidelines "Treat any change to how an amount is computed as a mismatch unless the doc describes it"
+  }
+  update attr "unit.llm_result"      from result.verdict
+  update attr "unit.llm_explanation" from result.explanation
+}
+
+rule "Ask a human when the model is unsure" {
+  for records where type == "code_unit" and attr "unit.llm_result" == "unclear"
+  requires "review.human"
+  do require "review.human"
+  do comment "pr" "Could not confirm {attr.unit.name} matches its docs: {attr.unit.llm_explanation}"
+  reason "llm review unclear"
+  priority MEDIUM
+}
+
+rule "Say so when the review could not run" {
+  for records where type == "code_unit" and attr "unit.llm_result" == "error"
+  requires "review.human"
+  do require "review.human"
+  do comment "pr" "AI review of {attr.unit.name} failed, so it was not checked against its docs"
+  reason "llm review error"
+  priority MEDIUM
+}

@@ -1,0 +1,77 @@
+test "Only important units with a doc are sent to the model" {
+  given {
+    record 1 type "code_unit"
+    attr 1 "unit.name" "app/services/payments/charge.rb"
+    attr 1 "unit.important" true
+    attr 1 "unit.doc_content" "charge(customer_id, amount_cents) charges exactly amount_cents"
+    attr 1 "unit.diff" "- gateway.charge(amount_cents)\n+ gateway.charge(amount_cents * 1.03)"
+
+    record 2 type "code_unit"
+    attr 2 "unit.name" "app/services/payments/receipt.rb"
+    attr 2 "unit.important" true
+    attr 2 "unit.doc_content" ""
+    attr 2 "unit.diff" "- pad(n, 4)\n+ pad(n, 5)"
+
+    record 3 type "code_unit"
+    attr 3 "unit.name" "lib/formatting.rb"
+    attr 3 "unit.important" false
+    attr 3 "unit.doc_content" "Formats numbers"
+    attr 3 "unit.diff" "- x\n+ y"
+  }
+
+  mock tool "llm" "review" { returns { verdict "mismatch" explanation "adds an undocumented 3% fee" } }
+
+  when enrich "Review documented units with house guidelines"
+
+  expect {
+    flagged 1
+    not flagged 2
+    not flagged 3
+    tool_called "llm" "review" with { unit == "app/services/payments/charge.rb" }
+  }
+}
+
+test "Unclear verdict asks a human and quotes the model" {
+  given {
+    record 1 type "code_unit"
+    attr 1 "unit.name" "app/services/payments/charge.rb"
+    attr 1 "unit.llm_result" "unclear"
+    attr 1 "unit.llm_explanation" "doc does not say whether retries are allowed"
+
+    record 2 type "code_unit"
+    attr 2 "unit.name" "app/services/payments/refund.rb"
+    attr 2 "unit.llm_result" "match"
+  }
+
+  when rule "Ask a human when the model is unsure"
+
+  expect {
+    flagged 1
+    not flagged 2
+    did 1 require "review.human"
+    did 1 comment "pr" contains "doc does not say whether retries are allowed"
+    did 1 comment "pr" contains "app/services/payments/charge.rb"
+    did_not 2 require "review.human"
+  }
+}
+
+test "Error verdict is reported, not silently passed" {
+  given {
+    record 1 type "code_unit"
+    attr 1 "unit.name" "app/services/payments/charge.rb"
+    attr 1 "unit.llm_result" "error"
+
+    record 2 type "code_unit"
+    attr 2 "unit.name" "app/services/payments/refund.rb"
+    attr 2 "unit.llm_result" "unclear"
+  }
+
+  when rule "Say so when the review could not run"
+
+  expect {
+    flagged 1
+    not flagged 2
+    did 1 require "review.human"
+    did 1 comment "pr" contains "failed"
+  }
+}

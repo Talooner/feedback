@@ -1,0 +1,87 @@
+define "small_change" {
+  attr "pr.lines_changed" < 50
+  attr "pr.files_changed" < 5
+}
+
+define "large_change" {
+  attr "pr.lines_changed" >= 500
+}
+
+define "critical_path" {
+  attr "pr.changed_files" contains "internal/auth/"
+    or attr "pr.changed_files" contains "billing/"
+}
+
+define "ready_for_review" {
+  attr "pr.draft" == false
+  attr "pr.has_description" == true
+}
+
+rule "Block PRs with no description" {
+  for records where type == "pr"
+    and attr "pr.draft" == false
+    and attr "pr.has_description" == false
+  block "merge"
+  do block "pr.merge"
+  do comment "pr" "This PR has no description. Say what changed and why before requesting review"
+  reason "no description"
+  priority HIGH
+}
+
+rule "Auto-approve safe changes" {
+  for records where type == "pr"
+    and is "small_change"
+    and is "ready_for_review"
+    and attr "pr.tests_passing" == true
+    and not is "critical_path"
+  allow "merge"
+  do approve "pr"
+  do comment "pr" "Small, tested, documented, and off the critical path — no objections from me"
+  priority MEDIUM
+}
+
+rule "Require human review for critical paths" {
+  for records where type == "pr"
+    and is "critical_path"
+  requires "review.senior_engineer"
+  do block "pr.merge"
+  do require "review.senior_engineer"
+  do assign "pr" attr "user.owner"
+  do comment "pr" "Touches critical code owned by @{attr.user.owner} — human approval required"
+  reason "touches a critical path"
+  priority HIGH
+}
+
+rule "Require human review for large PRs" {
+  for records where type == "pr"
+    and is "large_change"
+  requires "review.human"
+  do block "pr.merge"
+  do require "review.human"
+  do comment "pr" "{attr.pr.lines_changed} lines changed — too large to auto-approve. Consider splitting it"
+  reason "large change"
+  priority HIGH
+}
+
+rule "Escalate self-review of owned critical code" {
+  for records where type == "pr"
+    and is "critical_path"
+    and attr "user.owner" == attr "pr.author"
+  requires "review.senior_engineer"
+  do block "pr.merge"
+  do require "review.senior_engineer"
+  do comment "pr" "Author @{attr.pr.author} owns this code — needs an independent reviewer"
+  reason "author owns the code they changed"
+  priority CRITICAL
+}
+
+rule "Security review for new dependencies" {
+  for records where type == "pr"
+    and attr "pr.new_dependencies" > 0
+  requires "review.security_team"
+  do block "pr.merge"
+  do require "review.security_team"
+  do comment "pr" "{attr.pr.new_dependencies} new dependencies — security review required"
+  reason "adds new dependencies"
+  priority HIGH
+}

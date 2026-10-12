@@ -13,6 +13,9 @@ Open an issue when:
 - **Something is missing**: a forge, CI system, rule capability or option you need.
   Use **Feature request**.
 
+New to Talooner? Start with [`examples/`](examples): CI configs, ready-made rulesets with
+tests, and how to test rules locally.
+
 Search [existing issues](https://github.com/Talooner/feedback/issues?q=is%3Aissue) first. A 👍 on
 an existing issue counts.
 
@@ -35,3 +38,12 @@ docker run --rm ghcr.io/talooner/talooner-runner:<tag> version
 
 Also include the job log with `TALOONER_LOG_LEVEL=debug`, your CI config (secrets removed),
 and the smallest `.talooner/rules.tln` excerpt that shows the problem.
+
+## Security
+
+Never report a vulnerability in a public issue. See [SECURITY.md](SECURITY.md).
+
+## Billing, licenses and trials
+
+For license keys, trial extensions, plans and invoices, email **olvr.strobl@gmail.com**.
+Never post a license key in an issue.
