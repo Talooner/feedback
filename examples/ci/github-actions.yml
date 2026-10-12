@@ -12,7 +12,7 @@ jobs:
   review:
     runs-on: ubuntu-latest
     steps:
-      - uses: docker://ghcr.io/talooner/talooner-runner:0
+      - uses: docker://ghcr.io/talooner/talooner-runner:latest
         env:
           TALOONER_PROVIDER: github
           TALOONER_LICENSE_KEY: ${{ secrets.TALOONER_LICENSE_KEY }}

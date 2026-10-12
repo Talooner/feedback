@@ -1,6 +1,6 @@
 talooner:
   image:
-    name: ghcr.io/talooner/talooner-runner:0
+    name: ghcr.io/talooner/talooner-runner:latest
     entrypoint: [""]
   stage: test
   needs: []

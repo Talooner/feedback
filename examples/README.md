@@ -1,7 +1,7 @@
 # Examples
 
 Copy what you need into your repository. Every ruleset here ships with a test suite that
-passes against the `ghcr.io/talooner/talooner-runner:0` image.
+passes against the `ghcr.io/talooner/talooner-runner:latest` image.
 
 ## 1. Add the CI step
 
@@ -34,7 +34,7 @@ Prefer one secret over many? Fill in [`ci/talooner.yaml`](ci/talooner.yaml), enc
 store the output as a masked `TALOONER_CONFIG_B64` variable:
 
 ```sh
-docker run --rm -i ghcr.io/talooner/talooner-runner:0 encode-config - < talooner.yaml
+docker run --rm -i ghcr.io/talooner/talooner-runner:latest encode-config - < talooner.yaml
 ```
 
 Base64 is not encryption. Treat that value like the keys inside it.
@@ -76,7 +76,7 @@ Run this from your repository root:
 
 ```sh
 docker run --rm --entrypoint /opt/talooner/bin/tln \
-  -v "$PWD:/repo" -w /repo ghcr.io/talooner/talooner-runner:0 test .talooner/
+  -v "$PWD:/repo" -w /repo ghcr.io/talooner/talooner-runner:latest test .talooner/
 ```
 
 ## 4. Or let Talooner draft the rules
@@ -87,7 +87,7 @@ never source code) and drafts `.talooner/rules.tln` with tests:
 ```sh
 docker run --rm -v "$PWD:/repo" --user "$(id -u):$(id -g)" \
   -e TALOONER_LICENSE_KEY -e ANTHROPIC_API_KEY \
-  ghcr.io/talooner/talooner-runner:0 onboard
+  ghcr.io/talooner/talooner-runner:latest onboard
 ```
 
 Without a model key, you get the starter ruleset.
