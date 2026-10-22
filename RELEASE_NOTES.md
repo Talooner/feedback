@@ -5,11 +5,16 @@ request (GitLab), it applies the rules in `.talooner/rules.tln` from the base br
 approves, blocks, or asks for a human. With a model configured, it also reviews changed code
 against your docs.
 
-## Update your GitHub Actions workflow
+## GitHub
 
-Two changes. [`examples/ci/github-actions.yml`](examples/ci/github-actions.yml) has both.
+Talooner now reviews every new pull request when it is opened, without anyone commenting.
+Draft pull requests are skipped until they are marked ready for review. `!talooner /stop`
+still opts a pull request out.
 
-1. Review every new pull request without anyone commenting:
+Update your workflow in two places.
+[`examples/ci/github-actions.yml`](examples/ci/github-actions.yml) has both.
+
+1. Add `ready_for_review` and `closed` to the `pull_request` event types:
 
    ```yaml
    on:
@@ -17,8 +22,7 @@ Two changes. [`examples/ci/github-actions.yml`](examples/ci/github-actions.yml) 
        types: [opened, synchronize, reopened, ready_for_review, closed]
    ```
 
-   Draft pull requests are skipped until they are marked ready for review. `/stop` still
-   opts a pull request out.
+   With `ready_for_review`, a draft pull request is reviewed when it is marked ready.
 
 2. Add this line to the Talooner step's `env:`:
 
@@ -50,8 +54,8 @@ silently.
 
 - `onboard` is removed. Write `.talooner/rules.tln` yourself or start from
   [`examples/rulesets`](examples/rulesets).
-- `/why`, `/plan` and `/review --force` are disabled. Talooner replies that the command is
-  unknown and posts the help.
+- `!talooner /why`, `!talooner /plan` and `!talooner /review --force` are disabled. Talooner
+  replies that the command is not available and posts the help.
 
 ## Image tags
 
