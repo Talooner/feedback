@@ -79,17 +79,4 @@ docker run --rm --entrypoint /opt/talooner/bin/tln \
   -v "$PWD:/repo" -w /repo ghcr.io/talooner/talooner-runner:latest test .talooner/
 ```
 
-## 4. Or let Talooner draft the rules
-
-`onboard` reads your repository's layout (root names, workflow names, the top of the README,
-never source code) and drafts `.talooner/rules.tln` with tests:
-
-```sh
-docker run --rm -v "$PWD:/repo" --user "$(id -u):$(id -g)" \
-  -e TALOONER_LICENSE_KEY -e ANTHROPIC_API_KEY \
-  ghcr.io/talooner/talooner-runner:latest onboard
-```
-
-Without a model key, you get the starter ruleset.
-
 Stuck? [Open a setup help issue](https://github.com/Talooner/feedback/issues/new?template=setup_help.yml).

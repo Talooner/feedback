@@ -23,7 +23,6 @@ body:
         - Forge token or permissions
         - CI config
         - Model or LLM keys
-        - Onboarding (`onboard`, first rules.tln)
         - Writing or testing rules
         - Check run or comment never appears
         - Metrics / dashboard

@@ -1,6 +1,7 @@
 name: talooner
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, closed]
   pull_request_review:
   issue_comment:
     types: [created]
@@ -8,6 +9,7 @@ permissions:
   contents: read
   pull-requests: write
   checks: write
+  statuses: read
 jobs:
   review:
     runs-on: ubuntu-latest
@@ -19,4 +21,5 @@ jobs:
           TALOONER_MODEL_BASE_URL: ${{ vars.TALOONER_MODEL_BASE_URL }}
           TALOONER_MODEL: ${{ vars.TALOONER_MODEL }}
           TALOONER_MODEL_API_KEY: ${{ secrets.TALOONER_MODEL_API_KEY }}
+          TALOONER_CHECK_RUN_ID: ${{ job.check_run_id }}
           GITHUB_TOKEN: ${{ github.token }}
