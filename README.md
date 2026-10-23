@@ -19,6 +19,19 @@ tests, and how to test rules locally.
 Search [existing issues](https://github.com/Talooner/feedback/issues?q=is%3Aissue) first. A 👍 on
 an existing issue counts.
 
+## Commands
+
+Talooner reads one command per comment on a pull request (GitHub) or merge request
+(GitLab). A command is a line starting with the handle, `!talooner` by default:
+
+- `!talooner /review` — evaluate this pull request now and subscribe it: Talooner
+  re-evaluates it on every push until `/stop`.
+- `!talooner /stop` — unsubscribe this pull request: Talooner stops re-evaluating it on
+  push until `/review` is run again.
+
+Only the repository's owner, members and collaborators (people with write access) can
+run them. Anyone else's comment is ignored.
+
 ## Before you post
 
 This repository is public. Remove secrets from everything you paste:
