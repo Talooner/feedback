@@ -13,8 +13,12 @@ permissions:
 jobs:
   review:
     runs-on: ubuntu-latest
+    outputs:
+      resolve_threads: ${{ steps.talooner.outputs.resolve_threads }}
+      unresolve_threads: ${{ steps.talooner.outputs.unresolve_threads }}
     steps:
-      - uses: docker://ghcr.io/talooner/talooner-runner:latest
+      - id: talooner
+        uses: docker://ghcr.io/talooner/talooner-runner:latest
         env:
           TALOONER_PROVIDER: github
           TALOONER_LICENSE_KEY: ${{ secrets.TALOONER_LICENSE_KEY }}
@@ -23,3 +27,26 @@ jobs:
           TALOONER_MODEL_API_KEY: ${{ secrets.TALOONER_MODEL_API_KEY }}
           TALOONER_CHECK_RUN_ID: ${{ job.check_run_id }}
           GITHUB_TOKEN: ${{ github.token }}
+  # Resolving a review thread needs contents: write, which the Talooner image
+  # never gets: this job has no image and only flips the threads review named.
+  resolve:
+    needs: review
+    if: >-
+      !cancelled() &&
+      (needs.review.outputs.resolve_threads != '' || needs.review.outputs.unresolve_threads != '')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RESOLVE: ${{ needs.review.outputs.resolve_threads }}
+      UNRESOLVE: ${{ needs.review.outputs.unresolve_threads }}
+    steps:
+      - run: |
+          for id in $RESOLVE; do
+            gh api graphql -F id="$id" -f query='mutation($id: ID!) { resolveReviewThread(input: {threadId: $id}) { thread { id } } }'
+          done
+          for id in $UNRESOLVE; do
+            gh api graphql -F id="$id" -f query='mutation($id: ID!) { unresolveReviewThread(input: {threadId: $id}) { thread { id } } }'
+          done
